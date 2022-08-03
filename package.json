@@ -1,0 +1,23 @@
+{
+  "name": "pro-track-server",
+  "version": "1.0.0",
+  "description": "Issue Tracking Server App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AveyBD/pro-track-server.git"
+  },
+  "keywords": [
+    "issue",
+    "tracking"
+  ],
+  "author": "Debashish D. Dev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AveyBD/pro-track-server/issues"
+  },
+  "homepage": "https://github.com/AveyBD/pro-track-server#readme"
+}
