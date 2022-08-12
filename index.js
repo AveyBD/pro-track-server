@@ -39,6 +39,7 @@ async function run() {
       const result = await projectsCollection.insertOne(project);
       return res.send({ success: true, result });
     });
+
     // get all issue list api
     app.get("/issues", async (req, res) => {
       const query = {};
@@ -46,6 +47,14 @@ async function run() {
       const projects = await cursor.toArray();
       res.send(projects);
     });
+
+    // post issue
+    app.post("/issues", async (req, res) => {
+      const project = req.body;
+      const result = await issuesCollection.insertOne(project);
+      return res.send({ success: true, result });
+    });
+
     // get Meeting
     app.get("/meeting", async (req, res) => {
       const query = {};
