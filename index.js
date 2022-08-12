@@ -23,6 +23,7 @@ async function run() {
     console.log("MongoDB Connected");
     const projectsCollection = client.db("IssueTrack").collection("projects");
     const issuesCollection = client.db("IssueTrack").collection("issues");
+    const meetingCollection = client.db("IssueTrack").collection("meeting");
 
     // get all project list api
     app.get("/projects", async (req, res) => {
@@ -32,6 +33,7 @@ async function run() {
       res.send(projects);
     });
 
+    // post Project
     app.post("/projects", async (req, res) => {
       const project = req.body;
       const result = await projectsCollection.insertOne(project);
@@ -41,6 +43,13 @@ async function run() {
     app.get("/issues", async (req, res) => {
       const query = {};
       const cursor = issuesCollection.find(query);
+      const projects = await cursor.toArray();
+      res.send(projects);
+    });
+
+    app.get("/meeting", async (req, res) => {
+      const query = {};
+      const cursor = meetingCollection.find(query);
       const projects = await cursor.toArray();
       res.send(projects);
     });
