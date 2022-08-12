@@ -46,12 +46,19 @@ async function run() {
       const projects = await cursor.toArray();
       res.send(projects);
     });
-
+    // get Meeting
     app.get("/meeting", async (req, res) => {
       const query = {};
       const cursor = meetingCollection.find(query);
       const projects = await cursor.toArray();
       res.send(projects);
+    });
+
+    // post Meeting
+    app.post("/meeting", async (req, res) => {
+      const project = req.body;
+      const result = await meetingCollection.insertOne(project);
+      return res.send({ success: true, result });
     });
   } finally {
   }
