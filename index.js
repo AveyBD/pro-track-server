@@ -31,6 +31,12 @@ async function run() {
       const projects = await cursor.toArray();
       res.send(projects);
     });
+
+    app.post("/projects", async (req, res) => {
+      const project = req.body;
+      const result = await projectsCollection.insertOne(project);
+      return res.send({ success: true, result });
+    });
     // get all issue list api
     app.get("/issues", async (req, res) => {
       const query = {};
