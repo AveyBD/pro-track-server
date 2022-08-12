@@ -22,11 +22,19 @@ async function run() {
     await client.connect();
     console.log("MongoDB Connected");
     const projectsCollection = client.db("IssueTrack").collection("projects");
+    const issuesCollection = client.db("IssueTrack").collection("issues");
 
     // get all project list api
     app.get("/projects", async (req, res) => {
       const query = {};
       const cursor = projectsCollection.find(query);
+      const projects = await cursor.toArray();
+      res.send(projects);
+    });
+    // get all issue list api
+    app.get("/issues", async (req, res) => {
+      const query = {};
+      const cursor = issuesCollection.find(query);
       const projects = await cursor.toArray();
       res.send(projects);
     });
