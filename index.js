@@ -83,6 +83,18 @@ async function run() {
       res.send(result);
     });
 
+    // update issue api
+    app.put("/issues/:id", async (req, res) => {
+      const id = req.params.id;
+      const issue = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: issue,
+      };
+      const result = await issuesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     // get Meeting
     app.get("/meeting", async (req, res) => {
       const query = {};
