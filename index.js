@@ -40,6 +40,14 @@ async function run() {
       return res.send({ success: true, result });
     });
 
+    // delete Project API
+    app.delete("/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await projectsCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // get all issue list api
     app.get("/issues", async (req, res) => {
       const query = {};
@@ -55,6 +63,26 @@ async function run() {
       return res.send({ success: true, result });
     });
 
+    // update issue API
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const issue = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: issue,
+      };
+      const result = await issuesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // delete Issue API
+    app.delete("/issues/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await issuesCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // get Meeting
     app.get("/meeting", async (req, res) => {
       const query = {};
@@ -68,6 +96,13 @@ async function run() {
       const project = req.body;
       const result = await meetingCollection.insertOne(project);
       return res.send({ success: true, result });
+    });
+    // delete meeting API
+    app.delete("/meeting/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await meetingCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
