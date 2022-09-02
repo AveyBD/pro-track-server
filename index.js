@@ -66,6 +66,22 @@ async function run() {
   });
 
 
+  app.get('/invitedTeam/:email', async(req,res) =>{
+    const email = req.params.email;
+    const query = {};
+    const projects = await projectsCollection.find(query).toArray();
+    const invitedProjects = []
+    projects.map(project => {
+      project?.member?.map(e => {
+        if(e === email){
+          invitedProjects.push(project)
+        }
+      })
+    })
+    res.send(invitedProjects)
+  })
+
+
 //   app.get('/projects',  async(req,res) =>{
 //     const email = req.query.email;
 //     let allProject = []
