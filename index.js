@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5001;
 
@@ -16,22 +16,81 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-
 async function run() {
   try {
     await client.connect();
     console.log("MongoDB Connected");
     const projectsCollection = client.db("IssueTrack").collection("projects");
-    const issuesCollection = client.db("IssueTrack").collection("issues");
+    const issuesCollection = client.db("IssueTrack").collection("issueTest");
     const meetingCollection = client.db("IssueTrack").collection("meeting");
+    const usersCollection = client.db("IssueTrack").collection("users");
 
-    // get all project list api
-    app.get("/projects", async (req, res) => {
-      const query = {};
-      const cursor = projectsCollection.find(query);
-      const projects = await cursor.toArray();
-      res.send(projects);
+    // // get all project list api
+    // app.get("/projects", async (req, res) => {
+    //   const query = {};
+    //   const cursor = projectsCollection.find(query);
+    //   const projects = await cursor.toArray();
+    //   res.send(projects);
+    // });
+
+    // get a single project
+    app.get("/projects/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await projectsCollection.findOne(query);
+      res.send(result);
     });
+
+    // app.get("/invitedProjects/:email", async (req, res) => {
+    //   const email = req.params.email;
+    //   const query = {};
+    //   const projects = await projectsCollection.find();
+      
+    //   res.send(projects);
+    // });
+
+    // get all project
+    app.get('/projects',  async(req,res) =>{
+      const email = req.query.email;
+      console.log(email);
+      if(email){
+         const query = {email: email};
+      
+         const project = await projectsCollection.find(query).toArray();
+          res.send(project);
+      }
+      else{
+          return res.status(403).send({message: 'forbidden access'})
+      }
+     
+  });
+
+
+//   app.get('/projects',  async(req,res) =>{
+//     const email = req.query.email;
+//     let allProject = []
+//     if(email){
+//        const query = {email: email};
+//     const all = {}
+//        const project = await projectsCollection.find(query).toArray();
+//        const ap = await projectsCollection.find(all).toArray();
+//         // res.send(project);
+//         allProject= [...project]
+//         ap.map(s => {
+//           s?.member?.map( e =>{
+//             console.log(s)
+//             if(e === email){
+//               allProject = [...allProject,s]
+//             }
+//             res.send(allProject)
+//           })
+//         })
+//     }
+//     else{
+//         return res.status(403).send({message: 'forbidden access'})
+//     }
+   
+// });
 
     // post Project
     app.post("/projects", async (req, res) => {
@@ -39,6 +98,7 @@ async function run() {
       const result = await projectsCollection.insertOne(project);
       return res.send({ success: true, result });
     });
+
 
     // delete Project API
     app.delete("/projects/:id", async (req, res) => {
@@ -56,6 +116,38 @@ async function run() {
       res.send(projects);
     });
 
+    app.get('/myIssues',  async(req,res) =>{
+      const email = req.query.email;
+      console.log(email);
+      if(email){
+         const query = {email: email};
+      
+         const issues = await issuesCollection.find(query).toArray();
+          res.send(issues);
+      }
+      else{
+          return res.status(403).send({message: 'forbidden access'})
+      }
+    })
+
+
+    app.get("/projectIssues/:id", async (req, res) => {
+      const proId = req.params.id;
+      const query = {projectId : proId};
+      const cursor = issuesCollection.find(query);
+      const projects = await cursor.toArray();
+      res.send(projects);
+    });
+    // get single issue
+    app.get("/issues/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await issuesCollection.findOne(query);
+      res.send(result);
+    });
+
+    
+
     // post issue
     app.post("/issues", async (req, res) => {
       const project = req.body;
@@ -66,12 +158,17 @@ async function run() {
     // update issue API
     app.put("/update/:id", async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const issue = req.body;
       const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateIssue = {
+        status: issue
+      }
       const updateDoc = {
-        $set: issue,
+        $set: updateIssue,
       };
-      const result = await issuesCollection.updateOne(filter, updateDoc);
+      const result = await issuesCollection.updateOne(filter, updateDoc, options );
       res.send(result);
     });
 
@@ -95,6 +192,7 @@ async function run() {
       res.send(result);
     });
 
+    
     // get Meeting
     app.get("/meeting", async (req, res) => {
       const query = {};
@@ -116,6 +214,13 @@ async function run() {
       const result = await meetingCollection.deleteOne(query);
       res.send(result);
     });
+
+    app.post('/', async(req,res) =>{
+      const newConversation = new Conversation({
+        members: [req.body.senderId, req.body.receiverId],
+      })
+    })
+
   } finally {
   }
 }
