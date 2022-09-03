@@ -24,6 +24,7 @@ async function run() {
     const issuesCollection = client.db("IssueTrack").collection("issueTest");
     const meetingCollection = client.db("IssueTrack").collection("meeting");
     const usersCollection = client.db("IssueTrack").collection("users");
+    const feedbackCollection = client.db("IssueTrack").collection("feedback");
 
     // // get all project list api
     // app.get("/projects", async (req, res) => {
@@ -66,6 +67,7 @@ async function run() {
   });
 
 
+  // get invitedTeam
   app.get('/invitedTeam/:email', async(req,res) =>{
     const email = req.params.email;
     const query = {};
@@ -132,6 +134,7 @@ async function run() {
       res.send(projects);
     });
 
+    // get myIssues
     app.get('/myIssues',  async(req,res) =>{
       const email = req.query.email;
       console.log(email);
@@ -147,6 +150,7 @@ async function run() {
     })
 
 
+  // get projectIssues
     app.get("/projectIssues/:id", async (req, res) => {
       const proId = req.params.id;
       const query = {projectId : proId};
@@ -154,6 +158,8 @@ async function run() {
       const projects = await cursor.toArray();
       res.send(projects);
     });
+
+
     // get single issue
     app.get("/issues/:id", async (req, res) => {
       const id = req.params.id;
@@ -170,6 +176,7 @@ async function run() {
       const result = await issuesCollection.insertOne(project);
       return res.send({ success: true, result });
     });
+
 
     // update issue API
     app.put("/update/:id", async (req, res) => {
@@ -188,6 +195,7 @@ async function run() {
       res.send(result);
     });
 
+
     // delete Issue API
     app.delete("/issues/:id", async (req, res) => {
       const id = req.params.id;
@@ -195,6 +203,7 @@ async function run() {
       const result = await issuesCollection.deleteOne(query);
       res.send(result);
     });
+
 
     // update issue api
     app.put("/issues/:id", async (req, res) => {
@@ -213,16 +222,18 @@ async function run() {
     app.get("/meeting", async (req, res) => {
       const query = {};
       const cursor = meetingCollection.find(query);
-      const projects = await cursor.toArray();
-      res.send(projects);
+      const meetings = await cursor.toArray();
+      res.send(meetings);
     });
 
     // post Meeting
     app.post("/meeting", async (req, res) => {
-      const project = req.body;
-      const result = await meetingCollection.insertOne(project);
+      const meeting = req.body;
+      const result = await meetingCollection.insertOne(meeting);
       return res.send({ success: true, result });
     });
+
+
     // delete meeting API
     app.delete("/meeting/:id", async (req, res) => {
       const id = req.params.id;
@@ -231,11 +242,23 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/', async(req,res) =>{
-      const newConversation = new Conversation({
-        members: [req.body.senderId, req.body.receiverId],
-      })
-    })
+
+    // post feedback
+    app.post("/feedback", async (req, res) => {
+      const feedback = req.body;
+      const result = await feedbackCollection.insertOne(feedback);
+      return res.send({ success: true, result });
+    });
+
+
+    // get Meeting
+    app.get("/feedback", async (req, res) => {
+      const query = {};
+      const cursor = feedbackCollection.find(query);
+      const feedback = await cursor.toArray();
+      res.send(feedback);
+    });
+    
 
   } finally {
   }
