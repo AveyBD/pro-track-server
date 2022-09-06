@@ -25,6 +25,7 @@ async function run() {
     const meetingCollection = client.db("IssueTrack").collection("meeting");
     const usersCollection = client.db("IssueTrack").collection("users");
     const feedbackCollection = client.db("IssueTrack").collection("feedback");
+    const userInfo = client.db("IssueTrack").collection("userInfo");
 
     // // get all project list api
     // app.get("/projects", async (req, res) => {
@@ -258,6 +259,27 @@ async function run() {
       const feedback = await cursor.toArray();
       res.send(feedback);
     });
+    //put method for add info user
+    app.put('/info/:email', async (req, res) => {
+      const email = req.params.email
+      const user = req.body
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+          $set: user
+      };
+      const result = await userInfo.updateOne(filter, updateDoc, options);
+      res.send(result);
+  })
+  //user info api get
+  app.get("/userinfo", async (req, res) => {
+      const email = req.query.email
+
+
+      const query = { email: email }
+      const info = await userInfo.findOne(query)
+      res.send(info)
+  })
     
 
   } finally {
